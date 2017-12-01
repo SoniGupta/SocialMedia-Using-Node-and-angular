@@ -1,6 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { LoginPageComponent } from './LoginPage/LoginPage.component';
+import { FormsModule } from '@angular/forms';
+import { DataService } from './services';
+import { HttpModule } from '@angular/http'
+
 
 
 import { AppComponent } from './app.component';
@@ -12,9 +16,13 @@ import { AppComponent } from './app.component';
     LoginPageComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule,
+    HttpModule,
+
+
   ],
-  providers: [],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
