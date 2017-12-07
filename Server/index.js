@@ -3,6 +3,7 @@ var cors = require('cors')
 var app = express();
 var bodyParser=require('body-parser');
 var Sequelize = require('sequelize');
+var bcrypt = require('bcrypt');
 
 var db_Connection = new Sequelize('socialmedia', 'root', 'root', {
     host: 'localhost',
@@ -21,7 +22,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors());
 
 var Users = db_Connection.define('user',{
-
 	username: {
 		type: Sequelize.STRING,
 		allowNull: false
@@ -48,15 +48,56 @@ var Users = db_Connection.define('user',{
     }
 },{
     tableName:'Users',
-    timestamps: false
+    timestamps: true
 });
+var Login = db_Connection.define('login',{
+    email: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false
+    }
+},{
+    tableName:'Login',
+    timestamps: true
+});
+
 
 Users.sync().then(function(){
-    console.log("success")
-});
 
+});
+Login.sync().then(function(){
+
+});
+//middleware function
+function encrypt(req, res, next)
+{
+
+
+    bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(req.body.loginInfo.password, salt, function(err, hash) {
+            // Store hash in your password DB.
+            var hashedPassword=hash;
+            req.body.loginInfo.password=hashedPassword;
+            next();
+        });
+    });
+}
+
+app.post('/login', encrypt ,function(req,res){
+
+    debugger
+    Login.create(req.body.loginInfo).then(function(){
+        res.json({
+            "status": 200,
+            "message":"user logged in successfully. ",
+            "isSuccess":true
+        })
+    })
+})
 app.post('/users',function(req,res){
-console.log("test",req.body.userInfo);
 Users.create(req.body.userInfo).then(function(){
     res.json({
         "status": 200,
@@ -70,8 +111,7 @@ app.get('/getusers/:userid',function(req,res)
 {
     var id=req.params.userid;
     Users.findById(id).then(function(user){
-       // console.log(user);
-        console.log("test----");
+
         res.json({
             "status": 200,
             "message":"user added successfully",

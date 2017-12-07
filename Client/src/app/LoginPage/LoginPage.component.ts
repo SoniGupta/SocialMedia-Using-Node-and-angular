@@ -16,7 +16,13 @@ export class LoginPageComponent {
       "address":"",
       "mobileno":""
 
-    }
+    }}
+    loginObj={
+      loginInfo:{
+        email:"",
+        password:""
+      }
+
   }
   constructor(private dataService:DataService) {
 
@@ -41,5 +47,12 @@ export class LoginPageComponent {
 
   }
 
-
+  login(){
+    console.log(this.loginObj);
+    this.dataService.post('login',this.loginObj).subscribe(
+      response => {
+        console.log(this.loginObj);
+      }
+    )
+  }
 }
